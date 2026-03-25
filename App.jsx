@@ -55,11 +55,11 @@ const MiniChart = ({ data }) => {
 const BarChart = ({ data }) => {
   const categories = ["하체","가슴","등","어깨","코어"];
   const colors = ["#FF6B6B","#4ECDC4","#74B9FF","#FFD93D","#C77DFF"];
-  const totals = categories.map(cat => data.reduce((sum, d) => sum + d[cat], 0));
+  const totals = categories.map(cat => data.reduce((sum,d) => sum+d[cat],0));
   const max = Math.max(...totals);
   return (
     <div style={{display:"flex",alignItems:"flex-end",gap:12,height:120,padding:"0 8px"}}>
-      {categories.map((cat, i) => (
+      {categories.map((cat,i) => (
         <div key={cat} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
           <span style={{fontSize:11,color:colors[i],fontWeight:700}}>{totals[i]}</span>
           <div style={{width:"100%",height:(totals[i]/max)*90,background:"linear-gradient(180deg,"+colors[i]+","+colors[i]+"88)",borderRadius:"4px 4px 0 0"}}/>
@@ -83,8 +83,8 @@ export default function App() {
   const [active, setActive] = useState("dashboard");
   const [selectedMember, setSelectedMember] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const totalSessions = MEMBERS.reduce((s, m) => s + m.sessions, 0);
-  const dietRate = Math.round((MEMBERS.filter(m => m.diet).length / MEMBERS.length) * 100);
+  const totalSessions = MEMBERS.reduce((s,m) => s+m.sessions, 0);
+  const dietRate = Math.round((MEMBERS.filter(m=>m.diet).length/MEMBERS.length)*100);
 
   const Dashboard = () => (
     <div style={{display:"flex",flexDirection:"column",gap:24}}>
@@ -94,12 +94,12 @@ export default function App() {
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
         <StatCard label="총 회원수" value={MEMBERS.length} sub="이번달 신규 2명" color="#FF6B6B" emoji="👥"/>
-        <StatCard label="이번달 수업" value={totalSessions} sub={"목표 160회 " + Math.round(totalSessions/160*100) + "%"} color="#4ECDC4" emoji="🏋️"/>
+        <StatCard label="이번달 수업" value={totalSessions} sub={"목표 160회"} color="#4ECDC4" emoji="🏋️"/>
         <StatCard label="평균 PT 횟수" value={(totalSessions/MEMBERS.length).toFixed(1)} sub="회원당 평균" color="#74B9FF" emoji="📊"/>
-        <StatCard label="식단 등록률" value={dietRate+"%"} sub={MEMBERS.filter(m=>m.diet).length+"명 등록 중"} color="#C77DFF" emoji="🥗"/>
+        <StatCard label="식단 등록률" value={dietRate+"%"} sub={MEMBERS.filter(m=>m.diet).length+"명 등록"} color="#C77DFF" emoji="🥗"/>
       </div>
       <div style={{background:"#1a1a1a",border:"1px solid #2a2a2a",borderRadius:16,padding:20}}>
-        <h3 style={{margin:"0 0 16px",fontSize:14,color:"#888"}}>이번주 부위별 운동 횟수</h3>
+        <h3 style={{margin:"0 0 16px",fontSize:14,color:"#888"}}>부위별 운동 횟수</h3>
         <BarChart data={WORKOUT_DATA}/>
       </div>
       <div style={{background:"#1a1a1a",border:"1px solid #2a2a2a",borderRadius:16,padding:20}}>
@@ -111,7 +111,7 @@ export default function App() {
               <span style={{fontSize:12,color:"#666"}}>{m.sessions}/{m.targetSessions}회</span>
             </div>
             <div style={{background:"#252525",borderRadius:4,height:6}}>
-              <div style={{width:(m.sessions/m.targetSessions*100)+"%",height:"100%",background:m.color,borderRadius:4}}/>
+              <div style={{width:((m.sessions/m.targetSessions)*100)+"%",height:"100%",background:m.color,borderRadius:4}}/>
             </div>
           </div>
         ))}
@@ -183,28 +183,4 @@ export default function App() {
         </div>
         <div style={{padding:"8px"}}>
           {MENU.map(m => (
-            <button key={m.id} onClick={() => setActive(m.id)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"10px",background:active===m.id?"#FF6B6B22":"none",border:"none",borderLeft:active===m.id?"3px solid #FF6B6B":"3px solid transparent",color:active===m.id?"#FF6B6B":"#666",cursor:"pointer",fontSize:13,fontWeight:active===m.id?700:400,textAlign:"left"}}>
-              <span style={{fontSize:16,flexShrink:0}}>{m.emoji}</span>
-              {sidebarOpen && m.label}
-            </button>
-          ))}
-        </div>
-        {sidebarOpen && (
-          <div style={{padding:"8px",flex:1,overflowY:"auto"}}>
-            <div style={{fontSize:10,color:"#444",padding:"4px 8px 8px"}}>내 회원</div>
-            {MEMBERS.map(m => (
-              <button key={m.id} onClick={() => {setActive("members");setSelectedMember(m);}} style={{width:"100%",display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:"none",border:"none",color:"#888",cursor:"pointer",fontSize:12,borderRadius:6,textAlign:"left"}}>
-                <div style={{width:22,height:22,borderRadius:"50%",background:m.color+"33",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:m.color,flexShrink:0}}>{m.name[0]}</div>
-                <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.name} · {m.goal}</span>
-              </button>
-            ))}
-          </div>
-        )}
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{margin:8,padding:10,background:"#1e1e1e",border:"none",borderRadius:8,color:"#555",cursor:"pointer",fontSize:14}}>
-          {sidebarOpen ? "◀" : "▶"}
-        </button>
-      </div>
-      <div style={{flex:1,overflowY:"auto",padding:24}}>{renderContent()}</div>
-    </div>
-  );
-}
+            <button key={m.id} onClick={() => setActive(m.id)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding​​​​​​​​​​​​​​​​
