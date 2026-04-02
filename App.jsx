@@ -30,7 +30,7 @@ const MENU = [
   { id: "schedule", label: "수업 일정", emoji: "📅" },
 ];
 
-const MiniChart = ({ data }) => {
+const MiniChart = ({ data, color }) => {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -42,7 +42,7 @@ const MiniChart = ({ data }) => {
   }).join(" ");
   const isDown = data[data.length - 1] < data[0];
   return (
-    <svg width={w} height={h} style={{overflow:"visible"}}>
+    <svg width={w} height={h} style={{ overflow: "visible" }}>
       <polyline points={points} fill="none" stroke={isDown ? "#FF6B6B" : "#4ECDC4"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       {data.map((v, i) => {
         const x = (i / (data.length - 1)) * w;
@@ -52,18 +52,19 @@ const MiniChart = ({ data }) => {
     </svg>
   );
 };
+
 const BarChart = ({ data }) => {
-  const categories = ["하체","가슴","등","어깨","코어"];
-  const colors = ["#FF6B6B","#4ECDC4","#74B9FF","#FFD93D","#C77DFF"];
-  const totals = categories.map(cat => data.reduce((sum,d) => sum+d[cat],0));
+  const categories = ["하체", "가슴", "등", "어깨", "코어"];
+  const colors = ["#FF6B6B", "#4ECDC4", "#74B9FF", "#FFD93D", "#C77DFF"];
+  const totals = categories.map(cat => data.reduce((sum, d) => sum + d[cat], 0));
   const max = Math.max(...totals);
   return (
-    <div style={{display:"flex",alignItems:"flex-end",gap:12,height:120,padding:"0 8px"}}>
-      {categories.map((cat,i) => (
-        <div key={cat} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
-          <span style={{fontSize:11,color:colors[i],fontWeight:700}}>{totals[i]}</span>
-          <div style={{width:"100%",height:(totals[i]/max)*90,background:"linear-gradient(180deg,"+colors[i]+","+colors[i]+"88)",borderRadius:"4px 4px 0 0"}}/>
-          <span style={{fontSize:10,color:"#888"}}>{cat}</span>
+    <div style={{ display: "flex", alignItems: "flex-end", gap: 12, height: 120, padding: "0 8px" }}>
+      {categories.map((cat, i) => (
+        <div key={cat} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 11, color: colors[i], fontWeight: 700 }}>{totals[i]}</span>
+          <div style={{ width: "100%", height: (totals[i] / max) * 90, background: "linear-gradient(180deg," + colors[i] + "," + colors[i] + "88)", borderRadius: "4px 4px 0 0" }}/>
+          <span style={{ fontSize: 10, color: "#888" }}>{cat}</span>
         </div>
       ))}
     </div>
@@ -71,11 +72,11 @@ const BarChart = ({ data }) => {
 };
 
 const StatCard = ({ label, value, sub, color, emoji }) => (
-  <div style={{background:"#1a1a1a",border:"1px solid #2a2a2a",borderRadius:16,padding:"20px 16px",display:"flex",flexDirection:"column",gap:8,position:"relative",overflow:"hidden"}}>
-    <div style={{position:"absolute",top:-10,right:-10,fontSize:48,opacity:0.08}}>{emoji}</div>
-    <span style={{fontSize:12,color:"#666"}}>{label}</span>
-    <span style={{fontSize:36,fontWeight:800,color:color,lineHeight:1}}>{value}</span>
-    {sub && <span style={{fontSize:11,color:"#555"}}>{sub}</span>}
+  <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 16, padding: "20px 16px", display: "flex", flexDirection: "column", gap: 8, position: "relative", overflow: "hidden" }}>
+    <div style={{ position: "absolute", top: -10, right: -10, fontSize: 48, opacity: 0.08 }}>{emoji}</div>
+    <span style={{ fontSize: 12, color: "#666" }}>{label}</span>
+    <span style={{ fontSize: 36, fontWeight: 800, color: color, lineHeight: 1 }}>{value}</span>
+    {sub && <span style={{ fontSize: 11, color: "#555" }}>{sub}</span>}
   </div>
 );
 
@@ -83,35 +84,35 @@ export default function App() {
   const [active, setActive] = useState("dashboard");
   const [selectedMember, setSelectedMember] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const totalSessions = MEMBERS.reduce((s,m) => s+m.sessions, 0);
-  const dietRate = Math.round((MEMBERS.filter(m=>m.diet).length/MEMBERS.length)*100);
+  const totalSessions = MEMBERS.reduce((s, m) => s + m.sessions, 0);
+  const dietRate = Math.round((MEMBERS.filter(m => m.diet).length / MEMBERS.length) * 100);
 
   const Dashboard = () => (
-    <div style={{display:"flex",flexDirection:"column",gap:24}}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <div>
-        <h2 style={{margin:0,fontSize:22,fontWeight:800}}>대시보드</h2>
-        <p style={{margin:"4px 0 0",color:"#555",fontSize:13}}>{new Date().getFullYear()}년 {new Date().getMonth()+1}월</p>
+        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800 }}>대시보드</h2>
+        <p style={{ margin: "4px 0 0", color: "#555", fontSize: 13 }}>{new Date().getFullYear()}년 {new Date().getMonth() + 1}월 전체 현황</p>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <StatCard label="총 회원수" value={MEMBERS.length} sub="이번달 신규 2명" color="#FF6B6B" emoji="👥"/>
-        <StatCard label="이번달 수업" value={totalSessions} sub={"목표 160회"} color="#4ECDC4" emoji="🏋️"/>
-        <StatCard label="평균 PT 횟수" value={(totalSessions/MEMBERS.length).toFixed(1)} sub="회원당 평균" color="#74B9FF" emoji="📊"/>
-        <StatCard label="식단 등록률" value={dietRate+"%"} sub={MEMBERS.filter(m=>m.diet).length+"명 등록"} color="#C77DFF" emoji="🥗"/>
+        <StatCard label="이번달 수업" value={totalSessions} sub="목표 160회" color="#4ECDC4" emoji="🏋️"/>
+        <StatCard label="평균 PT 횟수" value={(totalSessions / MEMBERS.length).toFixed(1)} sub="회원당 평균" color="#74B9FF" emoji="📊"/>
+        <StatCard label="식단 등록률" value={dietRate + "%"} sub={MEMBERS.filter(m => m.diet).length + "명 등록"} color="#C77DFF" emoji="🥗"/>
       </div>
-      <div style={{background:"#1a1a1a",border:"1px solid #2a2a2a",borderRadius:16,padding:20}}>
-        <h3 style={{margin:"0 0 16px",fontSize:14,color:"#888"}}>부위별 운동 횟수</h3>
+      <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 16, padding: 20 }}>
+        <h3 style={{ margin: "0 0 16px", fontSize: 14, color: "#888" }}>부위별 운동 횟수</h3>
         <BarChart data={WORKOUT_DATA}/>
       </div>
-      <div style={{background:"#1a1a1a",border:"1px solid #2a2a2a",borderRadius:16,padding:20}}>
-        <h3 style={{margin:"0 0 16px",fontSize:14,color:"#888"}}>수업 진행률</h3>
-        {MEMBERS.slice(0,5).map(m => (
-          <div key={m.id} style={{marginBottom:12}}>
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-              <span style={{fontSize:13}}>{m.name}</span>
-              <span style={{fontSize:12,color:"#666"}}>{m.sessions}/{m.targetSessions}회</span>
+      <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 16, padding: 20 }}>
+        <h3 style={{ margin: "0 0 16px", fontSize: 14, color: "#888" }}>수업 진행률</h3>
+        {MEMBERS.slice(0, 5).map(m => (
+          <div key={m.id} style={{ marginBottom: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+              <span style={{ fontSize: 13 }}>{m.name}</span>
+              <span style={{ fontSize: 12, color: "#666" }}>{m.sessions}/{m.targetSessions}회</span>
             </div>
-            <div style={{background:"#252525",borderRadius:4,height:6}}>
-              <div style={{width:((m.sessions/m.targetSessions)*100)+"%",height:"100%",background:m.color,borderRadius:4}}/>
+            <div style={{ background: "#252525", borderRadius: 4, height: 6 }}>
+              <div style={{ width: ((m.sessions / m.targetSessions) * 100) + "%", height: "100%", background: m.color, borderRadius: 4 }}/>
             </div>
           </div>
         ))}
@@ -121,35 +122,35 @@ export default function App() {
 
   const Members = () => (
     <div>
-      <h2 style={{margin:"0 0 20px",fontSize:22,fontWeight:800}}>회원 목록</h2>
-      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 800 }}>회원 목록</h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {MEMBERS.map(m => (
-          <div key={m.id} onClick={() => setSelectedMember(selectedMember && selectedMember.id===m.id ? null : m)}
-            style={{background:"#1a1a1a",border:"1px solid "+(selectedMember && selectedMember.id===m.id ? m.color : "#2a2a2a"),borderRadius:12,padding:16,cursor:"pointer"}}>
-            <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <div style={{width:40,height:40,borderRadius:"50%",background:m.color+"33",border:"2px solid "+m.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:700,color:m.color}}>{m.name[0]}</div>
-              <div style={{flex:1}}>
-                <div style={{fontWeight:700,fontSize:15}}>{m.name}</div>
-                <span style={{background:m.color+"22",color:m.color,padding:"2px 8px",borderRadius:20,fontSize:11}}>{m.goal}</span>
+          <div key={m.id} onClick={() => setSelectedMember(selectedMember && selectedMember.id === m.id ? null : m)}
+            style={{ background: "#1a1a1a", border: "1px solid " + (selectedMember && selectedMember.id === m.id ? m.color : "#2a2a2a"), borderRadius: 12, padding: 16, cursor: "pointer" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 40, height: 40, borderRadius: "50%", background: m.color + "33", border: "2px solid " + m.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: m.color }}>{m.name[0]}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>{m.name}</div>
+                <span style={{ background: m.color + "22", color: m.color, padding: "2px 8px", borderRadius: 20, fontSize: 11 }}>{m.goal}</span>
               </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{fontSize:13,fontWeight:700}}>{m.sessions}회</div>
-                <div style={{fontSize:11,color:"#555"}}>/{m.targetSessions}회</div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>{m.sessions}회</div>
+                <div style={{ fontSize: 11, color: "#555" }}>/{m.targetSessions}회</div>
               </div>
             </div>
-            {selectedMember && selectedMember.id===m.id && (
-              <div style={{marginTop:16,paddingTop:16,borderTop:"1px solid #2a2a2a"}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
+            {selectedMember && selectedMember.id === m.id && (
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #2a2a2a" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                   <div>
-                    <div style={{fontSize:11,color:"#666",marginBottom:4}}>체중 변화</div>
-                    <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                      <span style={{fontSize:20,fontWeight:800}}>{m.weight[m.weight.length-1]}kg</span>
-                      <span style={{fontSize:12,color:m.weight[m.weight.length-1]<m.weight[0]?"#FF6B6B":"#4ECDC4"}}>
-                        {m.weight[m.weight.length-1]<m.weight[0]?"▼":"▲"} {Math.abs(m.weight[m.weight.length-1]-m.weight[0]).toFixed(1)}kg
+                    <div style={{ fontSize: 11, color: "#666", marginBottom: 4 }}>체중 변화</div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <span style={{ fontSize: 20, fontWeight: 800 }}>{m.weight[m.weight.length - 1]}kg</span>
+                      <span style={{ fontSize: 12, color: m.weight[m.weight.length - 1] < m.weight[0] ? "#FF6B6B" : "#4ECDC4" }}>
+                        {m.weight[m.weight.length - 1] < m.weight[0] ? "▼" : "▲"} {Math.abs(m.weight[m.weight.length - 1] - m.weight[0]).toFixed(1)}kg
                       </span>
                     </div>
                   </div>
-                  <MiniChart data={m.weight}/>
+                  <MiniChart data={m.weight} color={m.color}/>
                 </div>
               </div>
             )}
@@ -164,23 +165,47 @@ export default function App() {
       case "dashboard": return <Dashboard/>;
       case "members": return <Members/>;
       default: return (
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:300,color:"#444"}}>
-          <div style={{fontSize:48,marginBottom:16}}>🚧</div>
-          <div style={{fontSize:16}}>준비 중이에요</div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, color: "#444" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🚧</div>
+          <div style={{ fontSize: 16 }}>준비 중이에요</div>
         </div>
       );
     }
   };
 
   return (
-    <div style={{display:"flex",height:"100vh",background:"#0f0f0f",color:"#f0f0f0",fontFamily:"sans-serif",overflow:"hidden"}}>
-      <div style={{width:sidebarOpen?220:60,background:"#141414",borderRight:"1px solid #1e1e1e",display:"flex",flexDirection:"column",transition:"width 0.3s",overflow:"hidden",flexShrink:0}}>
-        <div style={{padding:"20px 16px",borderBottom:"1px solid #1e1e1e"}}>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <div style={{width:36,height:36,borderRadius:10,background:"linear-gradient(135deg,#FF6B6B,#FF9A3C)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>💪</div>
-            {sidebarOpen && <div><div style={{fontSize:13,fontWeight:800}}>PT 스튜디오</div><div style={{fontSize:10,color:"#555"}}>트레이너 관리</div></div>}
+    <div style={{ display: "flex", height: "100vh", background: "#0f0f0f", color: "#f0f0f0", fontFamily: "sans-serif", overflow: "hidden" }}>
+      <div style={{ width: sidebarOpen ? 220 : 60, background: "#141414", borderRight: "1px solid #1e1e1e", display: "flex", flexDirection: "column", transition: "width 0.3s", overflow: "hidden", flexShrink: 0 }}>
+        <div style={{ padding: "20px 16px", borderBottom: "1px solid #1e1e1e" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#FF6B6B,#FF9A3C)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>💪</div>
+            {sidebarOpen && <div><div style={{ fontSize: 13, fontWeight: 800 }}>PT 스튜디오</div><div style={{ fontSize: 10, color: "#555" }}>트레이너 관리</div></div>}
           </div>
         </div>
-        <div style={{padding:"8px"}}>
+        <div style={{ padding: "8px" }}>
           {MENU.map(m => (
-            <button key={m.id} onClick={() => setActive(m.id)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding​​​​​​​​​​​​​​​​
+            <button key={m.id} onClick={() => setActive(m.id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px", background: active === m.id ? "#FF6B6B22" : "none", border: "none", borderLeft: active === m.id ? "3px solid #FF6B6B" : "3px solid transparent", color: active === m.id ? "#FF6B6B" : "#666", cursor: "pointer", fontSize: 13, fontWeight: active === m.id ? 700 : 400, textAlign: "left" }}>
+              <span style={{ fontSize: 16, flexShrink: 0 }}>{m.emoji}</span>
+              {sidebarOpen && m.label}
+            </button>
+          ))}
+        </div>
+        {sidebarOpen && (
+          <div style={{ padding: "8px", flex: 1, overflowY: "auto" }}>
+            <div style={{ fontSize: 10, color: "#444", padding: "4px 8px 8px" }}>내 회원</div>
+            {MEMBERS.map(m => (
+              <button key={m.id} onClick={() => { setActive("members"); setSelectedMember(m); }} style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", background: "none", border: "none", color: "#888", cursor: "pointer", fontSize: 12, borderRadius: 6, textAlign: "left" }}>
+                <div style={{ width: 22, height: 22, borderRadius: "50%", background: m.color + "33", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: m.color, flexShrink: 0 }}>{m.name[0]}</div>
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.name} · {m.goal}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ margin: 8, padding: 10, background: "#1e1e1e", border: "none", borderRadius: 8, color: "#555", cursor: "pointer", fontSize: 14 }}>
+          {sidebarOpen ? "◀" : "▶"}
+        </button>
+      </div>
+      <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>{renderContent()}</div>
+    </div>
+  );
+}
